@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
 def home_page(request):
-    return render(request, "home.html")  # 渲染 home.html 模板并返回响应
+    return render(request, 'home.html', {
+        'new_item_text': request.POST.get('item_text', '')
+    })
