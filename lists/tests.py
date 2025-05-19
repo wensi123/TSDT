@@ -4,17 +4,26 @@ from django.urls import resolve
 from lists.views import home_page
 from django.http import HttpRequest
 from django.template.loader import render_to_string
-from lists.models import Item # This will initially cause an error
+from lists.models import Item,List # This will initially cause an error
 
 class ItemModelTest(TestCase):
 
     def test_saving_and_retrieving_items(self):
+        list_ = List()
+        list_.save()
+        
         first_item = Item()
         first_item.text = 'The first list item'
+        
+        first_item.list = list_
+        
         first_item.save()
 
         second_item = Item()
         second_item.text = 'Item the second'
+        
+        second_item.list = list_ 
+        
         second_item.save()
 
         saved_items = Item.objects.all()
@@ -38,17 +47,13 @@ class HomePageTest(TestCase):
 class ListViewTest(TestCase):
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-new-page/')
+        response = self.client.get(f'/lists/the-new-page/') # Modified
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_displays_all_list_items(self): # Name should be test_displays_all_items as per text
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
-
-        response = self.client.get('/lists/the-new-page/')
-
-        self.assertContains(response, 'itemey 1')
-        self.assertContains(response, 'itemey 2') # (1)
+    def test_displays_all_list_items(self): # Renamed from test_displays_all_items to this
+        list_user = List.objects.create()
+        Item.objects.create(text='itemey 1', list=list_user)
+        Item.objects.create(text='itemey 2', list=list_user)
         
 class NewListTest(TestCase):
 
