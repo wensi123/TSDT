@@ -2,12 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.common.by import By
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.common.exceptions import WebDriverException
 
 MAX_WAIT = 10 #(1)
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Chrome()
@@ -66,6 +66,16 @@ class NewVisitorTest(LiveServerTestCase):
         # 他满意的离开了
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
+        
+        # 添加
+        # 张三先访问首页并创建一个清单
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Buy flowers') # 给张三一个独特的待办事项
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy flowers') # 等待张三的列表项出现
+        # 添加
+        
         # 他注意到清单有个唯一的URL
         zhangsan_list_url = self.browser.current_url
         self.assertRegex(zhangsan_list_url, '/lists/.+')
