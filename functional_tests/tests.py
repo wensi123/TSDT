@@ -5,16 +5,19 @@ from selenium.webdriver.common.by import By
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.common.exceptions import WebDriverException
 import os
+from dotenv import load_dotenv
 
+load_dotenv() 
 MAX_WAIT = 10 #(1)
 
 class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Chrome()
-        real_server = os.environ.get('REAL_SERVER') #(1)
+        real_server = os.environ.get('REAL_SERVER','47.95.216.234') #(1)
         if real_server:
             self.live_server_url = 'http://' + real_server #(2)
+        print('live_server_url:', self.live_server_url) #(3)
 
     def tearDown(self):
         self.browser.quit()
